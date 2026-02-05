@@ -66,6 +66,7 @@ function fetchSection(viewPage, section, pageTitle) {
     })
     .then((title.innerHTML = pageTitle));
 }
+
 function fetchTeaching(viewPage, section, pageTitle) {
   fetch(viewPage)
     .then((response) => response.text())
