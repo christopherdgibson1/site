@@ -54,7 +54,7 @@ function getCourseIcons() {
     "grad",
   ];
   courses.forEach((course) => {
-    fetch(`/assets/images/${course}.svg`)
+    fetch(`assets/images/${course}.svg`)
       .then((response) => response.text())
       .then((svg) => {
         document.getElementById(`${course}Icon`).innerHTML = svg;
