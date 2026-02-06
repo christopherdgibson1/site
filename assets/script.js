@@ -99,12 +99,21 @@ window.addEventListener("popstate", (event) => {
 });
 
 // Handle refresh - check URL on page load
-window.addEventListener("DOMContentLoaded", () => {
-  const path = window.location.pathname.replace("/", "");
-  console.log("Path on load:", path);
-  if (path && path !== "index.html") {
+window.addEventListener('DOMContentLoaded', () => {
+  // Check for 404 redirect first
+  const redirect = sessionStorage.getItem('redirect');
+  if (redirect) {
+    sessionStorage.removeItem('redirect');
+    const view = redirect.replace('/', '');
+    loadView(view);
+    return; // Exit early since we've handled the redirect
+  }
+  
+  // Otherwise handle normal refresh/direct navigation
+  const path = window.location.pathname.replace('/', '');
+  if (path && path !== 'index.html') {
     loadView(path);
   } else {
-    loadView("home"); // default view
+    loadView('home'); // default view
   }
 });
