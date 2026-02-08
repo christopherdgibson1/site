@@ -78,8 +78,24 @@ function loadView(viewName) {
       title.innerHTML = viewName.charAt(0).toUpperCase() + viewName.slice(1);
       history.pushState({ view: viewName }, "", `/${viewName}`);
       if (viewCallbacks[viewName]) {
-        viewCallbacks[viewName]();
+        return Promise.resolve(viewCallbacks[viewName]());
       }
+    })
+    .then(() => {
+      const images = body.querySelectorAll("img");
+      const imagePromises = Array.from(images)
+        .filter((img) => !img.complete)
+        .map(
+          (img) =>
+            new Promise((resolve) => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            }),
+        );
+      return Promise.all(imagePromises);
+    })
+    .then(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     })
     .catch((error) => {
       // Fallback to home view or show error message
@@ -99,21 +115,21 @@ window.addEventListener("popstate", (event) => {
 });
 
 // Handle refresh - check URL on page load
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener("DOMContentLoaded", () => {
   // Check for 404 redirect first
-  const redirect = sessionStorage.getItem('redirect');
+  const redirect = sessionStorage.getItem("redirect");
   if (redirect) {
-    sessionStorage.removeItem('redirect');
-    const view = redirect.replace('/', '');
+    sessionStorage.removeItem("redirect");
+    const view = redirect.replace("/", "");
     loadView(view);
     return; // Exit early since we've handled the redirect
   }
-  
+
   // Otherwise handle normal refresh/direct navigation
-  const path = window.location.pathname.replace('/', '');
-  if (path && path !== 'index.html') {
+  const path = window.location.pathname.replace("/", "");
+  if (path && path !== "index.html") {
     loadView(path);
   } else {
-    loadView('home'); // default view
+    loadView("home"); // default view
   }
 });
